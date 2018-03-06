@@ -1,0 +1,19 @@
+language: go
+sudo: false
+notifications:
+  email: false
+go:
+  - 1.9
+os:
+  - linux
+  - osx
+jobs:
+  include:
+    - stage: test
+      install:
+        - npm install -g codeclimate-test-reporter
+        - go get -u github.com/alecthomas/gometalinter
+        - gometalinter --install
+      script:
+        - go build -race -v -gcflags "-N -l" .
+        - gometalinter --fast --exclude=corefoundation.go --deadline=360s --enable-gc --sort=path --vendor --cyclo-over=40 --dupl-threshold=100 --disable=gotype ./...
